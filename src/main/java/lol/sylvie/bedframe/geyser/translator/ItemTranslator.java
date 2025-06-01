@@ -74,7 +74,8 @@ public class ItemTranslator extends Translator {
             ItemStack itemStack = item.getPolymerItemStack(realItem.getDefaultStack(), TooltipType.BASIC, PacketContext.get());
             Identifier model = itemStack.get(DataComponentTypes.ITEM_MODEL);
 
-            if (model == null || model.getNamespace().equals("minecraft")) return; // FIXME: some people (cough me cough) store their models in the minecraft namespace
+            // Check if the model is provided by a mod using the minecraft namespace
+            if (model == null || (model.getNamespace().equals("minecraft") && !ResourceHelper.isModProvided(AssetPaths.itemModel(model)))) return;
 
             CustomItemOptions.Builder itemOptions = CustomItemOptions.builder();
 

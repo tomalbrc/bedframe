@@ -1,7 +1,6 @@
 package lol.sylvie.bedframe.util;
 
 import com.google.gson.JsonObject;
-import eu.pb4.polymer.resourcepack.api.AssetPaths;
 import eu.pb4.polymer.resourcepack.api.ResourcePackBuilder;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +17,10 @@ public class ResourceHelper {
 
     public static void setPolymerResourcePackBuilder(ResourcePackBuilder resourcePackBuilder) {
         RPBUILDER = resourcePackBuilder;
+    }
+
+    public static boolean isModProvided(String path) {
+        return RPBUILDER != null && RPBUILDER.getData(path) != null;
     }
 
     public static InputStream getResource(String path) {
