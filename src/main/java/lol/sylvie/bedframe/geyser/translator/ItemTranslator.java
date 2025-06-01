@@ -2,6 +2,7 @@ package lol.sylvie.bedframe.geyser.translator;
 
 import com.google.gson.JsonObject;
 import eu.pb4.polymer.core.api.item.PolymerItem;
+import eu.pb4.polymer.resourcepack.api.AssetPaths;
 import lol.sylvie.bedframe.geyser.Translator;
 import lol.sylvie.bedframe.util.BedframeConstants;
 import lol.sylvie.bedframe.util.ResourceHelper;
