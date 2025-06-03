@@ -93,7 +93,7 @@ public class ItemTranslator extends Translator {
             // Food
             FoodComponent foodComponent = components.get(DataComponentTypes.FOOD);
             if (foodComponent != null) {
-                itemBuilder.edible(true);
+                itemBuilder.edible(components.contains(DataComponentTypes.CONSUMABLE));
                 itemBuilder.canAlwaysEat(foodComponent.canAlwaysEat());
             }
 
@@ -122,16 +122,27 @@ public class ItemTranslator extends Translator {
             }
 
             JsonObject itemDescription = ResourceHelper.readJsonResource(model.getNamespace(), "items/" + model.getPath() + ".json");
-            Identifier modelId = Identifier.of(itemDescription.get("model").getAsJsonObject().get("model").getAsString());
+            if (itemDescription == null)
+                return;
 
+            JsonObject rootModel = itemDescription.get("model").getAsJsonObject();
+            if (rootModel == null || !rootModel.has("model"))
+                return;
+
+            Identifier modelId = Identifier.of(rootModel.get("model").getAsString());
             JsonObject modelObject = ResourceHelper.readJsonResource(modelId.getNamespace(), "models/" + modelId.getPath() + ".json");
-            Identifier modelType = Identifier.of(modelObject.get("parent").getAsString());
+            if (modelObject == null)
+                return;
 
-            if (modelType.equals(BedframeConstants.GENERATED_IDENTIFIER) || modelType.equals(BedframeConstants.HANDHELD_IDENTIFIER)) {
+            Identifier modelType = modelObject.has("parent") ? Identifier.of(modelObject.get("parent").getAsString()) : null;
+            if (modelType != null && (modelType.equals(BedframeConstants.GENERATED_IDENTIFIER) || modelType.equals(BedframeConstants.HANDHELD_IDENTIFIER))) {
+                boolean handheld = modelType.equals(BedframeConstants.HANDHELD_IDENTIFIER);
+                itemBuilder.displayHandheld(handheld);
+
                 Identifier textureId = Identifier.of(modelObject.get("textures").getAsJsonObject().get("layer0").getAsString());
 
                 String texturePath = "textures/" + textureId.getPath();
-                String bedrockPath = ResourceHelper.javaToBedrockTexture(texturePath);
+                String bedrockPath = ResourceHelper.javaToBedrockTexture(texturePath, "item");
                 String textureName = identifier.toString();
 
                 JsonObject textureObject = new JsonObject();
