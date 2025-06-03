@@ -6,7 +6,6 @@ import lol.sylvie.bedframe.util.JsonHelper;
 import lol.sylvie.bedframe.util.ResourceHelper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import oshi.util.tuples.Triplet;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -20,16 +19,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 public class JavaToBedrockGeometryTranslator {
-    public static Triplet<String, JsonArray, Map<String, String>> convert(Identifier modelId, Path packRoot) throws Exception {
+    public static ConversionResult convert(Identifier modelId, String outSubDir, Path packRoot) throws Exception {
         JsonObject javaModel = loadModel(modelId);
         if (javaModel == null)
             return null;
 
         Map<String, String> textureRefMap = new HashMap<>();
-        JsonArray elements = resolveElements(javaModel, JavaToBedrockGeometryTranslator::loadModel, textureRefMap);
+        JsonArray elements = resolveElements(javaModel, textureRefMap);
 
         if (elements == null) {
             return null;
@@ -53,7 +51,7 @@ public class JavaToBedrockGeometryTranslator {
         String bedrockStringId = modelId.toString().replace(":", ".").replace("/", ".");
         String bedrockStringIdWithPrefix = "geometry." + bedrockStringId;
         JsonObject bedrockGeo = buildBedrockGeometry(elements, textureMap, bedrockStringIdWithPrefix);
-        Path outputPath = packRoot.resolve("models/blocks/" + bedrockStringId + ".geo.json");
+        Path outputPath = packRoot.resolve("models/" + outSubDir + "/" + bedrockStringId + ".geo.json");
         Path parent = outputPath.getParent();
         if (parent != null) {
             Files.createDirectories(parent);
@@ -63,7 +61,7 @@ public class JavaToBedrockGeometryTranslator {
             JsonHelper.GSON.toJson(bedrockGeo, writer);
         }
 
-        return new Triplet<>(bedrockStringIdWithPrefix, elements, textureRefMap);
+        return new ConversionResult(bedrockStringIdWithPrefix, elements, textureRefMap);
     }
 
     public static String resolvePath(Map<String, String> map, String key) {
@@ -213,6 +211,9 @@ public class JavaToBedrockGeometryTranslator {
             cubes.add(cube);
             bone.add("cubes", cubes);
 
+            // to support custom item models https://learn.microsoft.com/en-us/minecraft/creator/documents/addcustomitems?view=minecraft-bedrock-stable
+            bone.add("binding", new JsonPrimitive("q.item_slot_to_bone_name(context.item_slot)"));
+
             bones.add(bone);
         }
 
@@ -247,7 +248,7 @@ public class JavaToBedrockGeometryTranslator {
         return null;
     }
 
-    public static JsonArray resolveElements(JsonObject model, Function<Identifier, JsonObject> modelLoader, Map<String, String> textureRefMap) {
+    public static JsonArray resolveElements(JsonObject model, Map<String, String> textureRefMap) {
         var map = model.getAsJsonObject("textures").asMap();
         for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
             textureRefMap.put(entry.getKey(), entry.getValue().getAsString());
@@ -310,5 +311,10 @@ public class JavaToBedrockGeometryTranslator {
         }
 
         return result;
+    }
+
+    public record ConversionResult(String geometryIdentifier, JsonArray elements,
+                                   Map<String, String> textureReferenceMap) {
+
     }
 }

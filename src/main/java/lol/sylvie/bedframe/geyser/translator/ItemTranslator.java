@@ -3,6 +3,8 @@ package lol.sylvie.bedframe.geyser.translator;
 import com.google.gson.JsonObject;
 import eu.pb4.polymer.core.api.item.PolymerItem;
 import eu.pb4.polymer.resourcepack.api.AssetPaths;
+import eu.pb4.polymer.resourcepack.extras.api.format.item.ItemAsset;
+import eu.pb4.polymer.resourcepack.extras.api.format.item.model.BasicItemModel;
 import lol.sylvie.bedframe.geyser.Translator;
 import lol.sylvie.bedframe.util.BedframeConstants;
 import lol.sylvie.bedframe.util.ResourceHelper;
@@ -106,6 +108,22 @@ public class ItemTranslator extends Translator {
             // Bows
             itemBuilder.chargeable(realItem instanceof CrossbowItem || realItem instanceof BowItem);
 
+            if (realDefaultItemStack.contains(DataComponentTypes.EQUIPPABLE)) {
+                // FIXME: ew
+                Map<String, String> equipmentSlotMap = Map.of(
+                        "mainhand", "main_hand",
+                        "offhand", "off_hand",
+                        "feet", "boots",
+                        "legs", "leggings",
+                        "chest", "chestplate",
+                        "head", "helmet",
+                        "body", "body",
+                        "saddle", "saddle" // does not exist in bedrock
+                );
+                // TODO: translate the equippable asset
+                itemBuilder.armorType(equipmentSlotMap.get(realDefaultItemStack.get(DataComponentTypes.EQUIPPABLE).slot().asString()));
+            }
+
             itemBuilder.customItemOptions(itemOptions.build());
             itemBuilder.javaId(Registries.ITEM.getRawIdOrThrow(realItem));
 
@@ -121,15 +139,11 @@ public class ItemTranslator extends Translator {
                 //itemBuilder.translationString(bedrockKey);
             }
 
-            JsonObject itemDescription = ResourceHelper.readJsonResource(model.getNamespace(), "items/" + model.getPath() + ".json");
-            if (itemDescription == null)
+            ItemAsset itemDescription = ResourceHelper.readJsonResource(AssetPaths.itemAsset(model), ItemAsset.class);
+            if (itemDescription == null || !(itemDescription.model() instanceof BasicItemModel basicItemModel))
                 return;
 
-            JsonObject rootModel = itemDescription.get("model").getAsJsonObject();
-            if (rootModel == null || !rootModel.has("model"))
-                return;
-
-            Identifier modelId = Identifier.of(rootModel.get("model").getAsString());
+            Identifier modelId = basicItemModel.model();
             JsonObject modelObject = ResourceHelper.readJsonResource(modelId.getNamespace(), "models/" + modelId.getPath() + ".json");
             if (modelObject == null)
                 return;

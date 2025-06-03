@@ -3,6 +3,7 @@ package lol.sylvie.bedframe.util;
 import com.google.gson.*;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import eu.pb4.polymer.resourcepack.extras.api.format.item.model.ItemModel;
 import net.minecraft.util.Identifier;
 
 import java.lang.reflect.Type;
@@ -10,6 +11,7 @@ import java.lang.reflect.Type;
 public class JsonHelper {
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(Identifier.class, new SimpleCodecDeserializer<>(Identifier.CODEC))
+            .registerTypeAdapter(ItemModel.class, new SimpleCodecDeserializer<>(ItemModel.CODEC))
             .create();
 
     public static class SimpleCodecDeserializer<T> implements JsonDeserializer<T> {

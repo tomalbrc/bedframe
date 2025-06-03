@@ -3,10 +3,7 @@ package lol.sylvie.bedframe.geyser;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import lol.sylvie.bedframe.util.BedframeConstants;
-import lol.sylvie.bedframe.util.PathHelper;
-import lol.sylvie.bedframe.util.ResourceHelper;
-import lol.sylvie.bedframe.util.ZipHelper;
+import lol.sylvie.bedframe.util.*;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
 
@@ -20,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static lol.sylvie.bedframe.util.BedframeConstants.GSON;
 import static lol.sylvie.bedframe.util.BedframeConstants.METADATA;
 
 /**
@@ -43,7 +39,7 @@ public class PackGenerator {
 
     private static void writeJsonToFile(JsonElement object, File file) throws IOException {
         try (FileWriter writer = new FileWriter(file)) {
-            GSON.toJson(object, writer);
+            JsonHelper.GSON.toJson(object, writer);
         }
     }
 

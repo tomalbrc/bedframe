@@ -2,6 +2,7 @@ package lol.sylvie.bedframe.geyser;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import lol.sylvie.bedframe.util.JsonHelper;
 import net.minecraft.util.Pair;
 import org.geysermc.geyser.api.event.EventBus;
 import org.geysermc.geyser.api.event.EventRegistrar;
@@ -13,8 +14,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.function.BiConsumer;
-
-import static lol.sylvie.bedframe.util.BedframeConstants.GSON;
 
 /**
  * Converts Java objects to Bedrock equivalents
@@ -60,7 +59,7 @@ public abstract class Translator implements EventRegistrar {
 
     protected static void writeJsonToFile(JsonObject object, File file) {
         try (FileWriter writer = new FileWriter(file)) {
-            GSON.toJson(object, writer);
+            JsonHelper.GSON.toJson(object, writer);
         } catch (IOException e) { throw new RuntimeException(e); }
     }
 }

@@ -6,6 +6,7 @@
     "BlockResourceCreatorAccessor",
     "CustomItemRegistryPopulatorMixin",
     "PolymerBlockResourceUtilsAccessor",
+    "PolymerBlockUtilsMixin",
     "PolymerItemMixin",
     "PolymerItemUtilsMixin"
   ],

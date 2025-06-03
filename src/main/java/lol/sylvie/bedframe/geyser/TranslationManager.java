@@ -37,7 +37,6 @@ public class TranslationManager implements EventRegistrar {
             return;
         }
 
-
         Path resourcePack = BedframeInitializer.CONFIG_DIR.resolve("bedframe.zip");
 
         EventBus<EventRegistrar> eventBus = GeyserApi.api().eventBus();

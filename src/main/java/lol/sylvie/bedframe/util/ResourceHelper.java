@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -62,9 +63,21 @@ public class ResourceHelper {
                 return null;
             }
 
-            return BedframeConstants.GSON.fromJson(new InputStreamReader(stream), JsonObject.class);
+            return JsonHelper.GSON.fromJson(new InputStreamReader(stream), JsonObject.class);
         } catch (IOException e) {
             throw new RuntimeException("Couldn't load resource " + Identifier.of(namespace, path), e);
+        }
+    }
+
+    public static <T> T readJsonResource(String path, Type t) {
+        try (InputStream stream = getResource(path)) {
+            if (stream == null) {
+                return null;
+            }
+
+            return JsonHelper.GSON.fromJson(new InputStreamReader(stream), t);
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't load resource " + path, e);
         }
     }
 
