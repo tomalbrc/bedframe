@@ -15,9 +15,9 @@ public class ZipHelper {
     // https://stackoverflow.com/questions/57997257/how-can-i-zip-a-complete-directory-with-all-subfolders-in-java
     public static void zipFolder(Path source, File destination) {
         try {
-            var parent = Path.of(destination.getParent());
-            if (!Files.exists(parent)) {
-                Files.createDirectory(parent); // this is just quickly hacked together, the dir has to exist in order to write the file
+            String parentDir = destination.getParent();
+            if (parentDir != null) {
+                Files.createDirectories(Path.of(parentDir));
             }
 
             ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(destination));
